@@ -1,0 +1,41 @@
+[build-system]
+requires = [
+    "setuptools",
+    "setuptools-git-versioning"
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools-git-versioning]
+enabled = true
+dev_template = "{tag}"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+
+[project]
+name = "xyzquery"
+dynamic = ["version"]
+authors = [
+  { name="Viktor Svahn", email="svahnv@gmail.com" },
+]
+description = "Small program used for querying extended xyz-format databases using the atomic simulation environment (ASE)."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    'numpy',
+    'ase',
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Ubuntu",
+]
+
+[project.urls]
+Homepage = "https://github.com/viktorsvahn/xyzquery/"
+Issues = "https://github.com/viktorsvahn/xyzquery/issues"
+
+
+[project.scripts]
+xq = "xyzquery.main:main"

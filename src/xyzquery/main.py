@@ -5,8 +5,8 @@ import sys
 import numpy as np
 from ase.io import read, iread, write
 
-#from xyzquery import utils
-import utils
+from xyzquery import utils
+#import utils
 
 
 class Parse:
@@ -68,7 +68,7 @@ class Parse:
 		return new_atoms
 
 
-if __name__ == '__main__':
+def main():
 	# CLI arguments
 	path = str(sys.argv[1])
 	query = str(sys.argv[2])
@@ -103,3 +103,6 @@ if __name__ == '__main__':
 			#utils.print_info(structure, E, max(Fnorm))
 
 		print(f'\nNumber of hits: {i}')
+
+if __name__ == '__main__':
+	main()
