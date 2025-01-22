@@ -16,19 +16,21 @@ def search_summary(config, elements):
 		summary = f' and '.join(elements)
 	elif (config == 'or') or (config == None):
 		summary = f' or '.join(elements)
-	print(f'Searching for: {summary}')
+
+	search_summary = f'Searching for: {summary}'
+	print(search_summary)
+	return search_summary
 
 
-def print_info(structure, energy, fmax, verbose=False):
+def print_info(structure):
 	#print()
 	longest_key = max([len(s) for s in structure.info]+[16])
 	top_spaces = 4+longest_key
 	print(f'  Chemical formula{" "*(top_spaces-16)}{structure.symbols}')
-	print(f'  Energy{" "*(top_spaces-6)}{energy}')
-	print(f'  Fmax{" "*(top_spaces-4)}{fmax}')
+	#print(f'  Energy{" "*(top_spaces-6)}{energy}')
+	#print(f'  Fmax{" "*(top_spaces-4)}{fmax}')
 	
-	if verbose:
-		#print('  Info:')
-		for key,val in structure.info.items():
-			verbose_spaces = 4+longest_key-len(key)
-			print(f'  {key}{" "*verbose_spaces}{val}')
+	#print('  Info:')
+	for key,val in structure.info.items():
+		verbose_spaces = 4+longest_key-len(key)
+		print(f'  {key}{" "*verbose_spaces}{val}')

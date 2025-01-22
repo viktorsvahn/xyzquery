@@ -1,14 +1,15 @@
 #!/usr/bin/python
 
-
 import sys
 import subprocess
 import numpy as np
+import matplotlib.pyplot as plt
 from ase.io import read, iread, write
 
 from xyzquery import utils
-#import utils
+from xyzquery.parser import argument_parser
 
+args = argument_parser()
 
 class Parse:
 	def __init__(self, path, query):
@@ -36,7 +37,6 @@ class Parse:
 
 		return element_list, config_list
 
-
 	def check_elements(self, structure, elements):
 		symbols = str(structure.symbols)
 
@@ -62,57 +62,63 @@ class Parse:
 				elif elements[0] == symbols:
 					return structure
 
-
 	def find_structures(self):
 		query = map(lambda a: self.check_elements(a, self.elements), self.atoms)
 		new_atoms = filter(lambda a: a is not None, query)
 		return new_atoms
 
 
-def plot():
-	argument = str(sys.argv[1])
-	#gnuplot -p -e "plot '<cat' using 1:2 w l"
-	cmd = f'gnuplot -p -e "plot \'<cat\' {argument}"'
-	print(cmd)
-	subprocess.run(cmd, shell=True)
+def plot(title, prop, data):
+	index = np.arange(1,len(data)+1)
 
+	plt.xticks(index)
+	plt.title(title)
+	plt.ylabel(prop)
+	plt.xlabel('Structure index')
+	plt.plot(index, data, '.-')
+	plt.show()
 
 
 def main():
-	# CLI arguments
-	path = str(sys.argv[1])
-	query = str(sys.argv[2])
-	try:
-		output = str(sys.argv[3])
-	except:
-		pass
-
 	# Parse input
-	parsed_query = Parse(path, query) # should generete a list that contains all matches
+	parsed_query = Parse(args.input, args.query) # should generete a list that contains all matches
 	
 	# Printed search string summary. Should maybe be verbose output
-	utils.search_summary(parsed_query.config[0], parsed_query.elements)
-	
+	search_summary = utils.search_summary(parsed_query.config[0], parsed_query.elements)
 
 	# Search
+	plot_data = []
 	result = parsed_query.find_structures()
-	try:
-		write(output, result)
-	except:
+	
+	# Saves to file or outputs structure info (text or plot)
+	if args.output:
+		write(args.output, result)
+	else:
 		i=0
 		for structure in result:
 			i+=1
-			print()
 			
+			# Adds number of atoms, energy and force information
 			E = structure.get_potential_energy()
 			F = structure.get_forces(); Fnorm = np.linalg.norm(F, axis=1)
-			print(f'Structure {i}:')
+			structure.info['num atoms'] = len(structure.numbers)
+			structure.info['total energy'] = E
+			structure.info['Fmax'] = max(Fnorm)
 			
-			# Print verbose
-			utils.print_info(structure, E, max(Fnorm), verbose=True)
-			#utils.print_info(structure, E, max(Fnorm))
+			# Show output
+			print()
+			print(f'Structure {i}:')
+			utils.print_info(structure)
+
+			# Store plot data in list
+			if args.plot:
+				plot_data.append(structure.info[args.plot])
 
 		print(f'\nNumber of hits: {i}')
+
+		# Plot data
+		if args.plot:
+			plot(search_summary, args.plot, plot_data)
 
 if __name__ == '__main__':
 	main()
