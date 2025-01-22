@@ -2,6 +2,7 @@
 
 
 import sys
+import subprocess
 import numpy as np
 from ase.io import read, iread, write
 
@@ -66,6 +67,15 @@ class Parse:
 		query = map(lambda a: self.check_elements(a, self.elements), self.atoms)
 		new_atoms = filter(lambda a: a is not None, query)
 		return new_atoms
+
+
+def plot():
+	argument = str(sys.argv[1])
+	#gnuplot -p -e "plot '<cat' using 1:2 w l"
+	cmd = f'gnuplot -p -e "plot \'<cat\' {argument}"'
+	print(cmd)
+	subprocess.run(cmd, shell=True)
+
 
 
 def main():

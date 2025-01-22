@@ -39,3 +39,4 @@ Issues = "https://github.com/viktorsvahn/xyzquery/issues"
 
 [project.scripts]
 xq = "xyzquery.main:main"
+xp = "xyzquery.main:plot"
