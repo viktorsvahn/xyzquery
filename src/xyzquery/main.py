@@ -31,7 +31,7 @@ class Parse:
 			element_string, config_string = self.query, None
 
 		# Convert element string to element list
-		element_list = utils.string_to_list(element_string)
+		element_list = utils.string_to_list(element_string, capitalise=True)
 		config_list = utils.string_to_list(config_string)
 
 		return element_list, config_list

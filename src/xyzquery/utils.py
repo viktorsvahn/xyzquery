@@ -1,9 +1,11 @@
 #!/usr/bin/python
 
 
-def string_to_list(input_string):
+def string_to_list(input_string, capitalise=False):
 	if (input_string is not None) and (',' in input_string):
 		output_list = input_string.split(',')
+		if capitalise:
+			output_list = [s.title() if len(s)<=2 else s for s in output_list]
 	else:
 		output_list = [input_string]
 	return output_list
