@@ -10,7 +10,7 @@ args = argument_parser()
  
 class Merge:
 	def __init__(self, handle, files):
-		self.handle = handle
+		self.HANDLE = handle
 		self.files = files
 		self.NUM_UNIQUE = 0
 		
@@ -21,7 +21,7 @@ class Merge:
 
 
 	def list_to_dict(self, atoms_list):
-		atoms_dict = {a.info[self.handle]:a for a in atoms_list}
+		atoms_dict = {a.info[self.HANDLE]:a for a in atoms_list}
 		return atoms_dict
 
 	def get_unique_structures(self, atoms_lists):
@@ -30,10 +30,10 @@ class Merge:
 			print(f'Merging unique structures in:')
 			for m in self.files:
 				print(f'  {m}')
-			print(f'with respect to \'{self.handle}\'')
+			print(f'with respect to \'{self.HANDLE}\'')
 		else:
 			print('Single file given.\n')
-			print(f'Counting unique structures in:\n  {merge_string}\nwith respect to \'{self.handle}\'')
+			print(f'Counting unique structures in:\n  {merge_string}\nwith respect to \'{self.HANDLE}\'')
 		
 		atoms_dicts = (self.list_to_dict(a) for a in atoms_lists)
 		atoms_dict = dict(collections.ChainMap(*atoms_dicts))
