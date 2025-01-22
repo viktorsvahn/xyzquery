@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import sys
-import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
 from ase.io import read, iread, write
@@ -114,6 +113,12 @@ def main():
 			structure.info['num atoms'] = len(structure.numbers)
 			structure.info['total energy'] = E
 			structure.info['Fmax'] = max(Fnorm)
+			
+			# drop unwieldy stress array from information
+			try:
+				del structure.info['stress']
+			except:
+				pass
 			
 			# Show output
 			print()

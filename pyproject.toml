@@ -14,7 +14,7 @@ where = ["src"]
 
 
 [project]
-name = "xyzquery"
+name = "xyzutils"
 dynamic = ["version"]
 authors = [
   { name="Viktor Svahn", email="svahnv@gmail.com" },
@@ -33,10 +33,10 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/viktorsvahn/xyzquery/"
-Issues = "https://github.com/viktorsvahn/xyzquery/issues"
+Homepage = "https://github.com/viktorsvahn/xyzutils/"
+Issues = "https://github.com/viktorsvahn/xyzutils/issues"
 
 
 [project.scripts]
 xq = "xyzquery.main:main"
-xp = "xyzquery.main:plot"
+xm = "xyzmerge.main:main"

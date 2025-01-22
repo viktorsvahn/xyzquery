@@ -23,14 +23,10 @@ def search_summary(config, elements):
 
 
 def print_info(structure):
-	#print()
 	longest_key = max([len(s) for s in structure.info]+[16])
 	top_spaces = 4+longest_key
+
 	print(f'  Chemical formula{" "*(top_spaces-16)}{structure.symbols}')
-	#print(f'  Energy{" "*(top_spaces-6)}{energy}')
-	#print(f'  Fmax{" "*(top_spaces-4)}{fmax}')
-	
-	#print('  Info:')
 	for key,val in structure.info.items():
 		verbose_spaces = 4+longest_key-len(key)
 		print(f'  {key}{" "*verbose_spaces}{val}')

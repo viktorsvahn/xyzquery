@@ -6,23 +6,22 @@ import argparse
 
 description = """
 CLI for merging extended xyz-format databases wihtout duplicates.
+
+The program is based on the atomic simulation environment (ASE) and will use
+keys present in the atoms objects info, such as atoms_object.info[handle].
+
+NOTE:
+This program will only make sure that the output is unique with respect to the 
+given handle, regardless of what the structure/atoms object itself looks like!
 """
 
 epilog = """Run:
-> xq example.xyz O(,)
-to search example.xyz for any structure that contains a single oxygen atom. 
-Adding a trailing ',' is intrepreted as an 'or' and will instead result in a 
-search for any structure that contains oxygen.
+> xm handle file1.xyz file2.xyz
+in order to merge the files such that the output are structures unique with
+respect to the given handle.
 
-To search for structures that contain either oxygen or nitrogen one may use:
-> xq example.xyz O,N
-or equivalently:
-> xq example.xyz O,N:or
-
-It is possible to include all strucutres that include both by calling:
-> xq example.xyz O,N:and
-or exclude both using:
-> xq example.xyz O,N:not
+If a only a single file is given the program will simply count the number of
+unique strucutres with respect to the given handle.
 """
 
 
@@ -48,7 +47,7 @@ def argument_parser():
     parser = argparse.ArgumentParser(
         prog='xm',
         description=description,
-        #epilog=epilog,
+        epilog=epilog,
         formatter_class=argparse.RawTextHelpFormatter,
     )
     parser.add_argument(
@@ -63,32 +62,6 @@ def argument_parser():
         '-o', '--output', default=False,
         help=output_help,
     )
-    """
-    parser.add_argument(
-        '-p', '--plot', default=False,
-        help=plot_help,
-    )
-    parser.add_argument(
-        '-s', '--save', default=False,
-        help=save_help,
-    )
-    parser.add_argument(
-        '-m', '--modifier', type=str, 
-        help=modifier_help,
-    )
-    parser.add_argument(
-        '-a', '--all', action='store_true',
-        help=all_help,
-    )
-    parser.add_argument(
-        '-o', '--output', default=None,
-        help=log_help,
-    )
-    parser.add_argument(
-        '-e', '--excluded', nargs='+', default=[],
-        help=exclude_help,
-    )
-    """
     info = parser.add_argument_group(
         'info',
     )
