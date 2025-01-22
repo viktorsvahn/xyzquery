@@ -68,7 +68,7 @@ class Parse:
 		return new_atoms
 
 
-def plot(title, prop, data):
+def plot(title, prop, index, data):
 	index = np.arange(1,len(data)+1)
 
 	plt.xticks(index)
@@ -87,7 +87,7 @@ def main():
 	search_summary = utils.search_summary(parsed_query.config[0], parsed_query.elements)
 
 	# Search
-	plot_data = []
+	data = []
 	result = parsed_query.find_structures()
 	
 	# Saves to file or outputs structure info (text or plot)
@@ -112,13 +112,34 @@ def main():
 
 			# Store plot data in list
 			if args.plot:
-				plot_data.append(structure.info[args.plot])
+				data.append(structure.info[args.plot])
+			elif args.save:
+				data.append(structure.info[args.save])
 
 		print(f'\nNumber of hits: {i}')
 
 		# Plot data
 		if args.plot:
-			plot(search_summary, args.plot, plot_data)
+			plot(search_summary, args.plot, data)
+
+
+		if args.save:
+			input_name = args.input.split('.')[0]
+			output_name = args.save.split(' ')
+			output_name = '-'.join(output_name)
+
+			index = np.arange(1,len(data)+1)
+			save_data = np.vstack([index, data]).T
+
+			np.savetxt(
+				f'{input_name}_{output_name}.dat',
+				save_data,
+				header=f'Index {output_name}'
+			)
+
+			#with open(f'{args.input}_{args.save}.dat', 'w') as f:
+			#	f.write(save_data)
+
 
 if __name__ == '__main__':
 	main()

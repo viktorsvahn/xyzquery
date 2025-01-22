@@ -47,6 +47,11 @@ plot_help = """
 plots a given info-parameter vs structure index
 """
 
+save_help = """
+saves a given info-parameter vs structure index to a file
+"""
+
+
 
 def argument_parser():
     parser = argparse.ArgumentParser(
@@ -70,6 +75,10 @@ def argument_parser():
     parser.add_argument(
         '-p', '--plot', default=False,
         help=plot_help,
+    )
+    parser.add_argument(
+        '-s', '--save', default=False,
+        help=save_help,
     )
     """
     parser.add_argument(
