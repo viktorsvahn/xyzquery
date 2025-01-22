@@ -68,9 +68,8 @@ class Parse:
 		return new_atoms
 
 
-def plot(title, prop, index, data):
+def plot(title, prop, data):
 	index = np.arange(1,len(data)+1)
-
 	plt.xticks(index)
 	plt.title(title)
 	plt.ylabel(prop)
@@ -78,6 +77,17 @@ def plot(title, prop, index, data):
 	plt.plot(index, data, '.-')
 	plt.show()
 
+def save(data):
+	input_name = args.input.split('.')[0]
+	output_name = args.save.split(' ')
+	output_name = '-'.join(output_name)
+	index = np.arange(1,len(data)+1)
+	save_data = np.vstack([index, data]).T
+	np.savetxt(
+		f'{input_name}_{output_name}.dat',
+		save_data,
+		header=f'Index {output_name}'
+	)
 
 def main():
 	# Parse input
@@ -122,24 +132,6 @@ def main():
 		if args.plot:
 			plot(search_summary, args.plot, data)
 
-
 		if args.save:
-			input_name = args.input.split('.')[0]
-			output_name = args.save.split(' ')
-			output_name = '-'.join(output_name)
-
-			index = np.arange(1,len(data)+1)
-			save_data = np.vstack([index, data]).T
-
-			np.savetxt(
-				f'{input_name}_{output_name}.dat',
-				save_data,
-				header=f'Index {output_name}'
-			)
-
-			#with open(f'{args.input}_{args.save}.dat', 'w') as f:
-			#	f.write(save_data)
-
-
-if __name__ == '__main__':
-	main()
+			save(data)
+			
