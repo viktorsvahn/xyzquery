@@ -61,6 +61,10 @@ def argument_parser():
         formatter_class=argparse.RawTextHelpFormatter,
     )
     parser.add_argument(
+        '--version', action='version',
+        version=version_help,
+    )
+    parser.add_argument(
         'input',
         help=input_help,
     )
@@ -68,16 +72,19 @@ def argument_parser():
         'query',
         help=query_help,
     )
-    parser.add_argument(
+    op = parser.add_argument_group(
+        'db operations',
+    )
+    op.add_argument(
         '-o', '--output', default=False,
         help=output_help,
     )
-    parser.add_argument(
+    op.add_argument(
         '-p', '--plot', default=False,
         metavar='KEY',
         help=plot_help,
     )
-    parser.add_argument(
+    op.add_argument(
         '-s', '--save', default=False,
         metavar='KEY',
         help=save_help,
@@ -99,13 +106,8 @@ def argument_parser():
         '-e', '--excluded', nargs='+', default=[],
         help=exclude_help,
     )
-    """
     info = parser.add_argument_group(
         'info',
-    )
-    info.add_argument(
-        '--version', action='version',
-        version=version_help,
-    )
+    """
   
     return parser.parse_args()

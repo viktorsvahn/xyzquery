@@ -38,6 +38,10 @@ input_help = """
 filenames of databases that are supposed to be merged
 """
 
+merge_help = """
+filenames of databases that are supposed to be merged
+"""
+
 output_help = """
 output name for merged database
 """
@@ -51,6 +55,10 @@ def argument_parser():
         formatter_class=argparse.RawTextHelpFormatter,
     )
     parser.add_argument(
+        '--version', action='version',
+        version=version_help,
+    )
+    parser.add_argument(
         'handle',
         help=handle_help,
     )
@@ -58,16 +66,17 @@ def argument_parser():
         'input', nargs='+', default=[],
         help=input_help,
     )
-    parser.add_argument(
+    op = parser.add_argument_group(
+        'db operations',
+    )
+    op.add_argument(
+        '-m', '--merge', action='store_true',
+        help=merge_help,
+    )
+    op.add_argument(
         '-o', '--output', default=False,
         help=output_help,
     )
-    info = parser.add_argument_group(
-        'info',
-    )
-    info.add_argument(
-        '--version', action='version',
-        version=version_help,
-    )
+    
   
     return parser.parse_args()

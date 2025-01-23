@@ -39,4 +39,4 @@ Issues = "https://github.com/viktorsvahn/xyzutils/issues"
 
 [project.scripts]
 xq = "xyzquery.main:main"
-xm = "xyzmerge.main:main"
+xc = "xyzcompare.main:main"
