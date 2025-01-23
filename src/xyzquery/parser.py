@@ -29,7 +29,7 @@ or exclude both using:
 # 80-23=57 spaces wide
 
 version_help = f'\
-xyzquery ver. {version("xyzquery")}'
+xyzutils ver. {version("xyzutils")}'
 
 input_help = """
 filename of xyz-database to be queried

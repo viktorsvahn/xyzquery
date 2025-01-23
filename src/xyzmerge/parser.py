@@ -28,7 +28,7 @@ unique strucutres with respect to the given handle.
 # 80-23=57 spaces wide
 
 version_help = f'\
-xyzquery ver. {version("xyzquery")}'
+xyzutils ver. {version("xyzutils")}'
 
 handle_help = """
 info-handle to be used as structure identifyers
