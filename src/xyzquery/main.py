@@ -11,9 +11,12 @@ from xyzquery.parser import argument_parser
 args = argument_parser()
 
 class Parse:
-	def __init__(self, path, query):
-		self.atoms = iread(path, ':')
+	def __init__(self, query, atoms):
 		self.query = query
+		if type(atoms) == str:
+			self.atoms = iread(atoms, ':')
+		else:
+			self.atoms = atoms
 		
 		self.elements, self.config = self.query_interpreter()
 
@@ -67,6 +70,15 @@ class Parse:
 		return new_atoms
 
 
+def recursive_search(query_list, input_object):
+	parsed_query = Parse(query_list[0], input_object)
+	summary = utils.search_summary(parsed_query.config[0], parsed_query.elements)
+	result = list(parsed_query.find_structures())
+	if len(query_list) == 1:
+		return result
+	else:
+		return recursive_search(query_list[1:], result)
+
 def plot(title, prop, data):
 	index = np.arange(1,len(data)+1)
 	plt.xticks(index)
@@ -88,21 +100,16 @@ def save(data):
 		header=f'Index {output_name}'
 	)
 
-def main():
-	# Parse input
-	parsed_query = Parse(args.input, args.query) # should generete a list that contains all matches
-	
-	# Printed search string summary. Should maybe be verbose output
-	search_summary = utils.search_summary(parsed_query.config[0], parsed_query.elements)
 
+def main():
 	# Search
-	data = []
-	result = parsed_query.find_structures()
+	result = recursive_search(args.query, args.input)
 	
 	# Saves to file or outputs structure info (text or plot)
 	if args.output:
 		write(args.output, result)
 	else:
+		data = []
 		i=0
 		for structure in result:
 			i+=1
@@ -139,4 +146,3 @@ def main():
 
 		if args.save:
 			save(data)
-			

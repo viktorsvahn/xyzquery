@@ -69,7 +69,7 @@ def argument_parser():
         help=input_help,
     )
     parser.add_argument(
-        'query',
+        'query', nargs='+', default=[],
         help=query_help,
     )
     op = parser.add_argument_group(
