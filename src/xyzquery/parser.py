@@ -9,20 +9,25 @@ CLI for querying extended xyz-format databases.
 """
 
 epilog = """Run:
-> xq example.xyz O(,)
+> xq example.xyz symbol.O(,)
 to search example.xyz for any structure that contains a single oxygen atom. 
 Adding a trailing ',' is intrepreted as an 'or' and will instead result in a 
 search for any structure that contains oxygen.
 
 To search for structures that contain either oxygen or nitrogen one may use:
-> xq example.xyz O,N
+> xq example.xyz symbol.O,N
 or equivalently:
-> xq example.xyz O,N:or
+> xq example.xyz s.O,N:or
+where the 's' is a shorthand for symbol.
 
 It is possible to include all strucutres that include both by calling:
-> xq example.xyz O,N:and
+> xq example.xyz s.O,N:and
 or exclude both using:
 > xq example.xyz O,N:not
+or to include O and exclude using:
+> xq example.xyz s.O, s.N:not
+
+To probe other info-keys, simply exchange 's' with the key in question.
 """
 
 
