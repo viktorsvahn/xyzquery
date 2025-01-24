@@ -12,9 +12,12 @@ args = argument_parser()
 
 class Query:
 	def __init__(self, query, atoms):
-		self.property, self.query = query.split('.')
+		# This setup allows for use of '.' in the search query
+		qsplit = query.split('.')
+		self.property, self.query = qsplit[0], '.'.join(qsplit[1:])
+
 		if self.property == '':
-			print('All search query must have an assigned property.')
+			print('All search queries must have an assigned property.')
 			quit()
 		elif self.property.lower() == 's':
 			self.property = 'symbols'
@@ -41,12 +44,12 @@ class Query:
 
 		# Convert element string to element list
 		if atoms_property in ('symbols', 's'):
-			element_list = utils.string_to_list(search_string, capitalise=True)
+			search_list = utils.string_to_list(search_string, capitalise=True)
 		else:
-			element_list = utils.string_to_list(search_string, capitalise=False)
+			search_list = utils.string_to_list(search_string, capitalise=False)
 		config_list = utils.string_to_list(config_string)
 
-		return element_list, config_list
+		return search_list, config_list
 
 	def check_search_string(self, structure, search_string):
 
@@ -57,7 +60,7 @@ class Query:
 			try:
 				atoms_property = str(structure.info[self.property])
 			except:
-				print('Invalid property specified.')
+				print('Invalid property specified. Symbols and info-keys are allowed.')
 				quit()
 
 		if 'not' in self.config:
