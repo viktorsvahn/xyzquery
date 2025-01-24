@@ -12,67 +12,85 @@ args = argument_parser()
 
 class Query:
 	def __init__(self, query, atoms):
-		self.query = query
+		self.property, self.query = query.split('.')
+		if self.property == '':
+			print('All search query must have an assigned property.')
+			quit()
+
 		if type(atoms) == str:
 			self.atoms = iread(atoms, ':')
 		else:
 			self.atoms = atoms
 		
-		self.elements, self.config = self.query_interpreter()
+		self.search_string, self.config = self.query_interpreter(self.query, self.property)
 
 		# Makes a trailing ',' equivalent to ':or'
-		if '' in self.elements:
+		if '' in self.search_string:
 			self.config = ','
-			self.elements.remove('')
+			self.search_string.remove('')
 
 
-	def query_interpreter(self):
-		# Split query into elements and config strings
-		if ':' in self.query:
-			element_string, config_string = self.query.split(':')
+	def query_interpreter(self, query, atoms_property):
+		# Split query into search_string and config strings
+		if ':' in query:
+			search_string, config_string = query.split(':')
 		else:
-			element_string, config_string = self.query, None
+			search_string, config_string = query, None
 
 		# Convert element string to element list
-		element_list = utils.string_to_list(element_string, capitalise=True)
+		if atoms_property == 'symbols':
+			element_list = utils.string_to_list(search_string, capitalise=True)
+		else:
+			element_list = utils.string_to_list(search_string, capitalise=False)
 		config_list = utils.string_to_list(config_string)
 
 		return element_list, config_list
 
-	def check_elements(self, structure, elements):
-		symbols = str(structure.symbols)
+	def check_search_string(self, structure, search_string):
+
+		if self.property == 'symbols':
+			symbols = str(structure.symbols)
+			atoms_property = str(getattr(structure, self.property))
+		else:
+			try:
+				atoms_property = str(structure.info[self.property])
+			except:
+				print('No such property')
 
 		if 'not' in self.config:
-			if all(e not in symbols for e in elements):
+			if all(s not in atoms_property for s in search_string):
 				return structure
 		else:
-			# Must include all elements
-			if ('and' in self.config) and all(e in symbols for e in elements):
+			# Must include all search_string
+			if ('and' in self.config) and all(s in atoms_property for s in search_string):
 				return structure
 			# Must include either element
-			#elif ('or' in self.config) or ('' in self.elements):
 			elif ('or' in self.config) or (',' in self.config):
-				if any(e in symbols for e in elements):
+				if any(s in atoms_property for s in search_string):
 					return structure
 			# Default behaviour
 			elif None in self.config:
 				# Given a list, defaults to 'or'
-				if len(elements)>1:
-					if any(e in symbols for e in elements):
+				if len(search_string)>1:
+					if any(s in atoms_property for s in search_string):
 						return structure
 				# Given a single element, defaults to equivalence
-				elif elements[0] == symbols:
+				elif search_string[0] == atoms_property:
 					return structure
 
 	def find_structures(self):
-		query = map(lambda a: self.check_elements(a, self.elements), self.atoms)
+		query = map(lambda a: self.check_search_string(a, self.search_string), self.atoms)
 		new_atoms = filter(lambda a: a is not None, query)
 		return new_atoms
 
 
 def recursive_search(query_list, input_object):
 	parsed_query = Query(query_list[0], input_object)
-	summary = utils.search_summary(parsed_query.config[0], parsed_query.elements)
+	summary = utils.search_summary(
+		config=parsed_query.config[0],
+		search_string=parsed_query.search_string,
+		atoms_property=parsed_query.property,
+	)
 	result = list(parsed_query.find_structures())
 	if len(query_list) == 1:
 		return result

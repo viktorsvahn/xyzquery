@@ -11,20 +11,20 @@ def string_to_list(input_string, capitalise=False):
 	return output_list
 
 
-def search_summary(config, elements):
+def search_summary(config, search_string, atoms_property):
 	if config == 'not':
-		summary = 'not '+f' or '.join(elements)
+		summary = 'not '+f' or '.join(search_string)
 	elif config == 'and':
-		summary = f' and '.join(elements)
+		summary = f' and '.join(search_string)
 	elif (config == 'or') or (config == None):
-		summary = f' or '.join(elements)
+		summary = f' or '.join(search_string)
 	elif config == ',':
-		if len(elements) == 1:
-			summary = f'presence of {elements[0]}'
+		if len(search_string) == 1:
+			summary = f'presence of {search_string[0]}'
 		else:
-			summary = f' or '.join(elements)
+			summary = f' or '.join(search_string)
 
-	search_summary = f'Searching for: {summary}'
+	search_summary = f'Searching {atoms_property} for: {summary}'
 	print(search_summary)
 	return search_summary
 
