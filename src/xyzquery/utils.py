@@ -18,6 +18,11 @@ def search_summary(config, elements):
 		summary = f' and '.join(elements)
 	elif (config == 'or') or (config == None):
 		summary = f' or '.join(elements)
+	elif config == ',':
+		if len(elements) == 1:
+			summary = f'presence of {elements[0]}'
+		else:
+			summary = f' or '.join(elements)
 
 	search_summary = f'Searching for: {summary}'
 	print(search_summary)
@@ -28,7 +33,7 @@ def print_info(structure):
 	longest_key = max([len(s) for s in structure.info]+[16])
 	top_spaces = 4+longest_key
 
-	print(f'  Chemical formula{" "*(top_spaces-16)}{structure.symbols}')
+	print(f'  chemical_formula{" "*(top_spaces-16)}{structure.symbols}')
 	for key,val in structure.info.items():
 		verbose_spaces = 4+longest_key-len(key)
 		print(f'  {key}{" "*verbose_spaces}{val}')

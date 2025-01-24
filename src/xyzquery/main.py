@@ -10,7 +10,7 @@ from xyzquery.parser import argument_parser
 
 args = argument_parser()
 
-class Parse:
+class Query:
 	def __init__(self, query, atoms):
 		self.query = query
 		if type(atoms) == str:
@@ -22,7 +22,7 @@ class Parse:
 
 		# Makes a trailing ',' equivalent to ':or'
 		if '' in self.elements:
-			self.config += ['or']
+			self.config = ','
 			self.elements.remove('')
 
 
@@ -51,7 +51,7 @@ class Parse:
 				return structure
 			# Must include either element
 			#elif ('or' in self.config) or ('' in self.elements):
-			elif 'or' in self.config:
+			elif ('or' in self.config) or (',' in self.config):
 				if any(e in symbols for e in elements):
 					return structure
 			# Default behaviour
@@ -71,7 +71,7 @@ class Parse:
 
 
 def recursive_search(query_list, input_object):
-	parsed_query = Parse(query_list[0], input_object)
+	parsed_query = Query(query_list[0], input_object)
 	summary = utils.search_summary(parsed_query.config[0], parsed_query.elements)
 	result = list(parsed_query.find_structures())
 	if len(query_list) == 1:
@@ -107,7 +107,7 @@ def main():
 	
 	# Saves to file or outputs structure info (text or plot)
 	if args.output:
-		write(args.output, result)
+		write(args.output, list(result))
 	else:
 		data = []
 		i=0
@@ -117,9 +117,9 @@ def main():
 			# Adds number of atoms, energy and force information
 			E = structure.get_potential_energy()
 			F = structure.get_forces(); Fnorm = np.linalg.norm(F, axis=1)
-			structure.info['num atoms'] = len(structure.numbers)
-			structure.info['total energy'] = E
-			structure.info['Fmax'] = max(Fnorm)
+			structure.info['num_atoms'] = len(structure.numbers)
+			structure.info['total_energy'] = E
+			structure.info['fmax'] = max(Fnorm)
 			
 			# drop unwieldy stress array from information
 			try:
