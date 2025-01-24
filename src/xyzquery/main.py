@@ -16,6 +16,8 @@ class Query:
 		if self.property == '':
 			print('All search query must have an assigned property.')
 			quit()
+		elif self.property.lower() == 's':
+			self.property = 'symbols'
 
 		if type(atoms) == str:
 			self.atoms = iread(atoms, ':')
@@ -38,7 +40,7 @@ class Query:
 			search_string, config_string = query, None
 
 		# Convert element string to element list
-		if atoms_property == 'symbols':
+		if atoms_property in ('symbols', 's'):
 			element_list = utils.string_to_list(search_string, capitalise=True)
 		else:
 			element_list = utils.string_to_list(search_string, capitalise=False)
@@ -48,14 +50,15 @@ class Query:
 
 	def check_search_string(self, structure, search_string):
 
-		if self.property == 'symbols':
+		if self.property in ('symbols', 's'):
 			symbols = str(structure.symbols)
 			atoms_property = str(getattr(structure, self.property))
 		else:
 			try:
 				atoms_property = str(structure.info[self.property])
 			except:
-				print('No such property')
+				print('Invalid property specified.')
+				quit()
 
 		if 'not' in self.config:
 			if all(s not in atoms_property for s in search_string):
