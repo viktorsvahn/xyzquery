@@ -69,18 +69,28 @@ class SingleFile(X):
 		if key_type == 'info':
 			all_keys = [set(a.info) for a in atoms]
 		elif key_type == 'arrays':
-			all_keys = [set(a.calc.results) for a in atoms]
+			all_keys = [set(a.calc.results)|set(a.arrays) for a in atoms]
 		shared_keys = set.intersection(*all_keys)
 		non_shared_keys = set.union(*all_keys) - shared_keys
 		return shared_keys, non_shared_keys
 
 	def check_info_similarity(self,atoms1, atoms2):
-		print(atoms1.info.values())
-		print(atoms2.info.values())
-		info_set1 = set(atoms1.info.values())
-		info_set2 = set(atoms2.info.values())
-		info_check = info_set1 == info_set2
-		return info_check
+		#print(atoms1.info.values())
+		#print(atoms2.info.values())
+		info_check = [
+			any(np.isclose(a,b))
+				if (type(a) == np.ndarray) and (type(b) == np.ndarray)
+				else a==b 
+				for a,b in zip(atoms1.info.values(),atoms2.info.values())
+		]
+		#print(info_check, all(info_check))
+		#print(x)
+		#print(atoms1.info.values()==atoms2.info.values())
+		#print(atoms1.info.values()==atoms1.info.values())
+		#info_set1 = set(atoms1.info.values())
+		#info_set2 = set(atoms2.info.values())
+		#info_check = info_set1 == info_set2
+		return info_check, all(info_check)
 
 	def measure_similarity(self, bool_list):
 		try:
@@ -97,8 +107,9 @@ class SingleFile(X):
 			key1:self.measure_similarity(np.isclose(val1, val2))
 			 for (key1,val1), val2 in zip(dict1.items(),dict2.values())
 		}
-		array_check_bool = map(lambda x: True if x>0 else False, array_check.values())
-		return array_check, all(array_check_bool)
+		array_check_bool = list(map(lambda x: True if x>0 else False, array_check.values()))
+		#print(array_check_bool, all(array_check_bool))
+		return array_check, array_check_bool
 
 	def union_overlapping_sets(self, set_list):
 		"""Makes one forward pass of neighbour set reduction by taking the union
@@ -131,8 +142,8 @@ class SingleFile(X):
 					# Symbol and info check
 					symbol_check = str(atoms1.symbols) == str(atoms2.symbols)
 					if symbol_check:
-						print('öjpöjasojopåjdasd')
-						info_check = self.check_info_similarity(
+						#print('öjpöjasojopåjdasd')
+						info_check, info_check_bool = self.check_info_similarity(
 							atoms1,
 							atoms2
 						)
@@ -142,25 +153,34 @@ class SingleFile(X):
 							atoms1.arrays,
 							atoms2.arrays,
 						)
-
-						# Results check: forces, energies etc
-						results_check, results_check_bool = self.check_array_similarity(
-							atoms1.calc.results,
-							atoms2.calc.results,
-						)
-						print('FASPLDJASDJSAPIDJASDJP')
-						if info_check and array_check_bool and results_check_bool:
+						if all(array_check_bool):
+							# Results check: forces, energies etc
+							results_check, results_check_bool = self.check_array_similarity(
+								atoms1.calc.results,
+								atoms2.calc.results,
+							)
+						#print('FASPLDJASDJSAPIDJASDJP')
+						if info_check_bool and all(array_check_bool) and all(results_check_bool):
+							#print('hhhhehrereereh')
 							identical.append(set([i+1,j+1]))
-						elif info_check:
+						elif info_check_bool:
 							same_info.append(set([i+1,j+1]))
 						else:
 							#if array_check:
 							#	same_arrays = {(i+1,j+1):array_check}
-							same_arrays[(i+1,j+1)] = array_check
+							if any(array_check_bool):
+								same_arrays[(i+1,j+1)] = array_check
 							#if results_check:
 							#	same_results = {(i+1,j+1):results_check}
-							same_results[(i+1,j+1)] = results_check
-		print(same_arrays)
+							if any(results_check_bool):
+								same_results[(i+1,j+1)] = results_check
+				else:
+					break
+		#print(same_arrays)
+		#print(identical)
+		#print(same_info)
+		#print(same_arrays)
+
 		identical = self.union_overlapping_sets(identical)
 		return identical, same_info, same_arrays|same_results
 
@@ -180,15 +200,18 @@ def check_shared_data(shared, non_shared, title):
 def print_similarity(file_object, title):
 	if len(file_object) > 0:
 		print(title)
-		if type(file_object) == list:
-			for similarity in file_object:
-				print(f'  {similarity}')
-		elif type(file_object) == dict:
+		if type(file_object) == dict:
 			for pair, arrays in file_object.items():
 				print(f'  Structure {pair[0]} and {pair[1]}:')
+				#print(arrays)
 				for prop, sim in arrays.items():
-					if sim > 0:
-						print(f'    {prop} are {sim}% similar')
+					#if sim > 0:
+						#print(f'    {prop} are {sim}% similar')
+					print(f'    {prop} are {sim}% similar')
+		#elif type(file_object) == list:
+		else:
+			for similarity in file_object:
+				print(f'  {similarity}')
 
 
 def main():
@@ -214,14 +237,14 @@ def main():
 			# Check similarities
 			if args.check_sim:
 				identical, same_info, same_arrays = file_check.check_similarity()
-				print(identical)
+				#print(identical)
 				print_similarity(
 					identical,
 					'\nThe following structures are likely identical:'
 				)
 				print_similarity(
 					same_info,
-					'\nThe following structures are likely identical:'
+					'\nThe following structures heve the same info-keys:'
 				)
 				print_similarity(
 					same_arrays,
