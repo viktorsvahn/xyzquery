@@ -16,12 +16,27 @@ given handle, regardless of what the structure/atoms object itself looks like!
 """
 
 epilog = """Run:
-> xm handle file1.xyz file2.xyz
-in order to merge the files such that the output are structures unique with
-respect to the given handle.
+> xc file.xyz
+to count the number of structures contained within the file. (should print all
+keys that are possibly shared between all structures and which are not, if there
+is a mismatch)
 
-If a only a single file is given the program will simply count the number of
-unique strucutres with respect to the given handle.
+Given two separate files, merge all unique structures with respect to a given
+info-key using:
+> xc key file1.xyz file2.xyz -m
+(NOTE: This allows one to use *.xyz when merging!)
+
+
+PLAN:
+compare keys (are they the same w.r.t a key -> have both pos+force/energies been changed?)
+> xc key file1.xyz file2.xyz -c
+compare positions (are they the same w.r.t positions -> have force/energies been changed?)
+> xc file1.xyz:pos file2.xyz:pos -c
+compare forces (are they the same w.r.t forces -> does this contain recomputed forces?)
+> xc file1.xyz:forces file2.xyz:forces -c
+
+check for dubplicates in single structure wihtout any flag
+> xc key file.xyz
 """
 
 
@@ -39,7 +54,15 @@ filenames of databases that are supposed to be merged
 """
 
 merge_help = """
-filenames of databases that are supposed to be merged
+??
+"""
+
+sim_help = """
+??
+"""
+
+compare_help = """
+??
 """
 
 output_help = """
@@ -49,7 +72,7 @@ output name for merged database
 
 def argument_parser():
     parser = argparse.ArgumentParser(
-        prog='xm',
+        prog='xc',
         description=description,
         epilog=epilog,
         formatter_class=argparse.RawTextHelpFormatter,
@@ -63,7 +86,7 @@ def argument_parser():
         help=handle_help,
     )
     parser.add_argument(
-        'input', nargs='+', default=[],
+        'input', nargs='*', default=[],
         help=input_help,
     )
     op = parser.add_argument_group(
@@ -72,6 +95,18 @@ def argument_parser():
     op.add_argument(
         '-m', '--merge', action='store_true',
         help=merge_help,
+    )
+    op.add_argument(
+        '-c', '--compare', default=False,
+        help=compare_help,
+    )
+    op.add_argument(
+        '--check-sim', action='store_true',
+        help=sim_help,
+    )
+    op.add_argument(
+        '--keys', action='store_true',
+        help=sim_help,
     )
     op.add_argument(
         '-o', '--output', default=False,
